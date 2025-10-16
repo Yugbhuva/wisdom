@@ -1,0 +1,338 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Lora', serif;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #4facfe 75%, #00f2fe 100%);
+    background-size: 400% 400%;
+    animation: gradientShift 15s ease infinite;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    position: relative;
+    overflow-x: hidden;
+}
+
+@keyframes gradientShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+/* Paper texture overlay */
+body::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: 
+        repeating-linear-gradient(0deg, rgba(255,255,255,.03) 0px, transparent 1px, transparent 2px, rgba(255,255,255,.03) 3px),
+        repeating-linear-gradient(90deg, rgba(255,255,255,.03) 0px, transparent 1px, transparent 2px, rgba(255,255,255,.03) 3px);
+    pointer-events: none;
+    opacity: 0.3;
+}
+
+.container {
+    max-width: 900px;
+    width: 100%;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    padding: 60px 40px 40px;
+    position: relative;
+    z-index: 1;
+}
+
+header {
+    text-align: center;
+    margin-bottom: 50px;
+}
+
+.site-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 3rem;
+    color: #2d3748;
+    margin-bottom: 10px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.subtitle {
+    font-size: 1.1rem;
+    color: #718096;
+    font-style: italic;
+    letter-spacing: 0.5px;
+}
+
+.filter-section {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.filter-section label {
+    font-size: 1rem;
+    color: #4a5568;
+    margin-right: 10px;
+    font-weight: 600;
+}
+
+.category-select {
+    padding: 10px 20px;
+    font-size: 1rem;
+    border: 2px solid #cbd5e0;
+    border-radius: 8px;
+    background: white;
+    color: #2d3748;
+    cursor: pointer;
+    font-family: 'Lora', serif;
+    transition: all 0.3s ease;
+}
+
+.category-select:hover {
+    border-color: #667eea;
+}
+
+.category-select:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.quote-container {
+    background: linear-gradient(135deg, #f6f8fb 0%, #ffffff 100%);
+    padding: 30px 20px;
+    border-radius: 10px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    margin-bottom: 40px;
+    min-height: 150px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-left: 5px solid #667eea;
+    position: relative;
+    overflow: hidden;
+}
+
+.quote-container::before {
+    content: '"';
+    position: absolute;
+    top: -20px;
+    left: 20px;
+    font-size: 120px;
+    color: rgba(102, 126, 234, 0.1);
+    font-family: 'Playfair Display', serif;
+    line-height: 1;
+}
+
+.quote-content {
+    opacity: 0;
+    animation: fadeIn 0.8s ease forwards;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.quote-text {
+    font-size: 1.8rem;
+    line-height: 1.6;
+    color: #2d3748;
+    margin-bottom: 25px;
+    font-style: italic;
+    text-align: center;
+    font-family: 'Playfair Display', serif;
+}
+
+.quote-author {
+    font-size: 1.2rem;
+    color: #667eea;
+    text-align: right;
+    font-weight: 600;
+    font-family: 'Lora', serif;
+}
+
+.button-section {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.next-quote-btn {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    padding: 15px 40px;
+    font-size: 1.1rem;
+    border-radius: 50px;
+    cursor: pointer;
+    font-family: 'Lora', serif;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.next-quote-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.5);
+}
+
+.next-quote-btn:active {
+    transform: translateY(0);
+}
+
+.next-quote-btn svg {
+    transition: transform 0.3s ease;
+}
+
+.next-quote-btn:hover svg {
+    transform: translateX(5px);
+}
+
+.share-section {
+    text-align: center;
+    padding: 30px 0;
+    border-top: 1px solid #e2e8f0;
+}
+
+.share-label {
+    font-size: 1rem;
+    color: #4a5568;
+    margin-bottom: 15px;
+    font-weight: 600;
+}
+
+.share-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.share-btn {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+}
+
+.share-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.share-btn.twitter {
+    background: #000000;
+    color: white;
+}
+
+.share-btn.facebook {
+    background: #1877f2;
+    color: white;
+}
+
+.share-btn.whatsapp {
+    background: #25d366;
+    color: white;
+}
+
+footer {
+    text-align: center;
+    margin-top: 40px;
+    padding-top: 30px;
+    border-top: 1px solid #e2e8f0;
+    color: #718096;
+    font-size: 0.9rem;
+}
+
+.privacy-link {
+    color: #667eea;
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.3s ease;
+}
+
+.privacy-link:hover {
+    color: #764ba2;
+    text-decoration: underline;
+}
+
+/* Loading state */
+.quote-container.loading {
+    opacity: 0.6;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .container {
+        padding: 40px 25px 30px;
+    }
+
+    .site-title {
+        font-size: 2.5rem;
+    }
+
+    .subtitle {
+        font-size: 1rem;
+    }
+
+    .quote-container {
+        padding: 40px 25px;
+        min-height: 200px;
+    }
+
+    .quote-text {
+        font-size: 1.4rem;
+    }
+
+    .quote-author {
+        font-size: 1rem;
+    }
+
+    .next-quote-btn {
+        padding: 12px 30px;
+        font-size: 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .site-title {
+        font-size: 2rem;
+    }
+
+    .quote-container {
+        padding: 30px 20px;
+    }
+
+    .quote-text {
+        font-size: 1.2rem;
+    }
+
+    .share-btn {
+        width: 45px;
+        height: 45px;
+    }
+}
