@@ -33,10 +33,6 @@ function setupEventListeners() {
     if (shareWhatsapp) shareWhatsapp.addEventListener('click', shareOnWhatsApp);
 
     if (copyBtn) copyBtn.addEventListener('click', () => copyQuote(activeCard));
-    if (favoriteBtn) favoriteBtn.addEventListener('click', () => toggleFavorite(activeCard));
-    if (openFavoritesBtn) openFavoritesBtn.addEventListener('click', openFavoritesModal);
-    if (closeFavorites) closeFavorites.addEventListener('click', closeFavoritesModal);
-    if (clearFavorites) clearFavorites.addEventListener('click', clearAllFavorites);
     if (fontInc) fontInc.addEventListener('click', () => adjustFontSize(1));
     if (fontDec) fontDec.addEventListener('click', () => adjustFontSize(-1));
 
@@ -50,7 +46,6 @@ function setupEventListeners() {
 
     // keyboard for active interactions
     document.addEventListener('keydown', (e) => {
-        if (e.key === 'f' || e.key === 'F') toggleFavorite(activeCard);
         if (e.key === 'c' || e.key === 'C') copyQuote(activeCard);
         if (e.code === 'Space' && e.target.tagName !== 'INPUT' && e.target.tagName !== 'TEXTAREA') {
             e.preventDefault();
@@ -326,34 +321,4 @@ function shareOnTwitter() {
 
 function shareOnFacebook() {
     const quoteIndex = cardIndices[activeCard];
-    if (quoteIndex == null) return;
-    const q = allQuotes[quoteIndex];
-    const text = `"${q.quote}" — ${q.author}`;
-    const url = `https://www.facebook.com/sharer/sharer.php?quote=${encodeURIComponent(text)}`;
-    window.open(url, '_blank', 'width=550,height=420');
-}
-
-function shareOnWhatsApp() {
-    const quoteIndex = cardIndices[activeCard];
-    if (quoteIndex == null) return;
-    const q = allQuotes[quoteIndex];
-    const text = `"${q.quote}" — ${q.author}`;
-    const url = `https://wa.me/?text=${encodeURIComponent(text)}`;
-    window.open(url, '_blank');
-}
-
-// Show Loading State
-function showLoading() {
-    document.querySelectorAll('[data-card-text]').forEach(el => el.textContent = 'Loading wisdom...');
-    document.querySelectorAll('[data-card-author]').forEach(el => el.textContent = '— Please wait');
-}
-
-// Update z-index for stacking
-function updateCardZIndices() {
-    const cards = Array.from(quoteCards());
-    cards.forEach((card, i) => {
-        let z = 10 + i;
-        if (Number(card.getAttribute('data-card-index')) === activeCard) z = 100;
-        card.style.zIndex = z;
-    });
-}
+    if
