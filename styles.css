@@ -149,8 +149,14 @@ header {
     }
 }
 
+/* Use CSS variable for quote font size so JS can adjust it */
+:root {
+    --quote-font-size: 18px;
+}
+
+/* ensure quote-text uses variable */
 .quote-text {
-    font-size: 1.8rem;
+    font-size: var(--quote-font-size);
     line-height: 1.6;
     color: #2d3748;
     margin-bottom: 25px;
@@ -283,6 +289,197 @@ footer {
 /* Loading state */
 .quote-container.loading {
     opacity: 0.6;
+}
+
+/* Controls row */
+.controls-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    align-items: center;
+    margin-bottom: 18px;
+}
+
+.control-buttons {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+/* Controls: distinct color variants */
+.icon-btn {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    padding: 10px 14px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    min-width: 50px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.icon-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(102, 126, 234, 0.4);
+}
+
+.icon-btn:active {
+    transform: translateY(0);
+}
+
+/* Copy button - Green */
+.copy-btn {
+    background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+    box-shadow: 0 4px 12px rgba(72, 187, 120, 0.3);
+}
+.copy-btn:hover {
+    box-shadow: 0 6px 18px rgba(72, 187, 120, 0.4);
+}
+
+/* Heart / favorite button - Red */
+.fav-btn {
+    background: linear-gradient(135deg, #f56565 0%, #e53e3e 100%);
+    box-shadow: 0 4px 12px rgba(245, 101, 101, 0.3);
+}
+.fav-btn:hover {
+    box-shadow: 0 6px 18px rgba(245, 101, 101, 0.4);
+}
+
+/* Font buttons (A-/A+) - Orange */
+.font-btn {
+    background: linear-gradient(135deg, #f6ad55 0%, #ed8936 100%);
+    box-shadow: 0 4px 12px rgba(246, 173, 85, 0.3);
+}
+.font-btn:hover {
+    box-shadow: 0 6px 18px rgba(246, 173, 85, 0.4);
+}
+
+/* Hide Favorites button */
+.favorites-list-btn {
+    display: none;
+}
+
+/* Favorites modal */
+.modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.45);
+    z-index: 9999;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-content {
+    background: #fff;
+    width: min(720px, 95%);
+    max-height: 80vh;
+    overflow: auto;
+    padding: 20px;
+    border-radius: 12px;
+    position: relative;
+}
+
+.modal-close {
+    position: absolute;
+    right: 14px;
+    top: 10px;
+    background: transparent;
+    border: none;
+    font-size: 22px;
+    cursor: pointer;
+}
+
+.favorites-list .fav-item {
+    border-bottom: 1px solid #eef2ff;
+    padding: 12px 0;
+}
+
+.fav-quote { font-style: italic; margin-bottom: 6px; }
+.fav-author { color: #667eea; font-weight: 600; margin-bottom: 8px; }
+
+.btn.small {
+    padding: 6px 8px;
+    font-size: 0.9rem;
+    margin-right: 6px;
+}
+
+.modal-actions {
+    margin-top: 12px;
+    text-align: right;
+}
+
+/* Stack layout (vertical overlapping cards) */
+.quotes-stack {
+    position: relative;
+    width: 100%;
+    max-width: 720px;
+    margin: 0 auto 28px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+}
+
+/* Base card appearance */
+.quote-card {
+    width: 100%;
+    max-width: 680px;
+    background: linear-gradient(180deg, #ffffff 0%, #f7f9fc 100%);
+    border-radius: 12px;
+    padding: 18px;
+    min-height: 120px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    box-shadow: 0 8px 28px rgba(12, 14, 20, 0.06);
+    cursor: pointer;
+    transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+    border: 2px solid transparent;
+    position: relative;
+    margin-top: 40px; /* increased space between cards */
+}
+
+/* First card should not be pulled up */
+.quotes-stack .quote-card:first-child {
+    margin-top: 0;
+}
+
+/* Slight scale for cards further down to create depth */
+.quotes-stack .quote-card:nth-child(1) { transform: translateY(0) scale(1); }
+.quotes-stack .quote-card:nth-child(2) { transform: translateY(0) scale(0.995); }
+.quotes-stack .quote-card:nth-child(3) { transform: translateY(0) scale(0.99); }
+
+/* Hover elevates individual card slightly */
+.quote-card:hover {
+    transform: translateY(-6px) scale(1.002);
+    box-shadow: 0 16px 40px rgba(12,14,20,0.09);
+}
+
+/* Active card style: prominent, on top */
+.quote-card.active {
+    border-color: rgba(102, 126, 234, 0.45);
+    box-shadow: 0 24px 60px rgba(102, 126, 234, 0.14);
+    transform: translateY(-12px) scale(1.02) !important;
+    z-index: 50; /* JS will set specific z-indexes too */
+}
+
+/* ensure stacked cards use variable font size */
+.quote-card .quote-text { font-size: var(--quote-font-size); }
+
+/* Adjust spacing on small screens */
+@media (max-width: 900px) {
+    .quotes-stack .quote-card { margin-top: 32px; max-width: 640px; }
+}
+@media (max-width: 520px) {
+    .quotes-stack .quote-card { margin-top: 24px; max-width: 100%; }
+    .control-buttons { flex-wrap: wrap; gap: 6px; }
 }
 
 /* Responsive Design */

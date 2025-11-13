@@ -16,11 +16,35 @@
         </header>
 
         <main>
-            <!-- Quote Display Box -->
-            <div class="quote-container" id="quoteContainer">
-                <div class="quote-content">
-                    <p class="quote-text" id="quoteText">Loading wisdom...</p>
-                    <p class="quote-author" id="quoteAuthor">— Please wait</p>
+            <!-- Controls: copy, favorite, font size -->
+            <div class="controls-row">
+                <div class="control-buttons">
+                    <button id="copyBtn" class="icon-btn copy-btn" title="Copy quote">Copy</button>
+                    <button id="favoriteBtn" class="icon-btn fav-btn" title="Add to favorites">♡</button>
+                    <button id="fontDec" class="icon-btn font-btn" title="Decrease font">A-</button>
+                    <button id="fontInc" class="icon-btn font-btn" title="Increase font">A+</button>
+                </div>
+            </div>
+
+            <!-- Quote Display: show 3 quotes at a time (stack form) -->
+            <div class="quotes-stack" id="quotesGrid">
+                <div class="quote-card" data-card-index="0" tabindex="0" aria-label="Quote card 1">
+                    <div class="quote-content">
+                        <p class="quote-text" data-card-text>Loading…</p>
+                        <p class="quote-author" data-card-author>—</p>
+                    </div>
+                </div>
+                <div class="quote-card" data-card-index="1" tabindex="0" aria-label="Quote card 2">
+                    <div class="quote-content">
+                        <p class="quote-text" data-card-text>Loading…</p>
+                        <p class="quote-author" data-card-author>—</p>
+                    </div>
+                </div>
+                <div class="quote-card" data-card-index="2" tabindex="0" aria-label="Quote card 3">
+                    <div class="quote-content">
+                        <p class="quote-text" data-card-text>Loading…</p>
+                        <p class="quote-author" data-card-author>—</p>
+                    </div>
                 </div>
             </div>
 
@@ -32,6 +56,18 @@
                         <path d="M5 12h14M12 5l7 7-7 7"/>
                     </svg>
                 </button>
+            </div>
+
+            <!-- Favorites Modal -->
+            <div id="favoritesModal" class="modal" aria-hidden="true">
+                <div class="modal-content">
+                    <button id="closeFavorites" class="modal-close" aria-label="Close favorites">×</button>
+                    <h2>Favorites</h2>
+                    <div id="favoritesList" class="favorites-list"></div>
+                    <div class="modal-actions">
+                        <button id="clearFavorites" class="btn">Clear All</button>
+                    </div>
+                </div>
             </div>
 
             <!-- Google AdSense Placeholder -->
