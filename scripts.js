@@ -1,21 +1,15 @@
 let currentQuote = null;
 let allQuotes = [];
-
-// new: mapped quote indices for the three cards and active card index
 let cardIndices = [null, null, null];
 let activeCard = 0;
 
-// DOM Elements (updated)
+// DOM Elements
 const quotesGrid = document.getElementById('quotesGrid');
 const quoteCards = () => document.querySelectorAll('.quote-card');
 const shareTwitter = document.getElementById('shareTwitter');
 const shareFacebook = document.getElementById('shareFacebook');
 const shareWhatsapp = document.getElementById('shareWhatsapp');
 const copyBtn = document.getElementById('copyBtn');
-const favoriteBtn = document.getElementById('favoriteBtn');
-const openFavoritesBtn = document.getElementById('openFavoritesBtn');
-const closeFavorites = document.getElementById('closeFavorites');
-const clearFavorites = document.getElementById('clearFavorites');
 const fontInc = document.getElementById('fontInc');
 const fontDec = document.getElementById('fontDec');
 
@@ -25,18 +19,16 @@ document.addEventListener('DOMContentLoaded', () => {
     setupEventListeners();
 });
 
-// Setup Event Listeners (cards + controls)
+// Setup Event Listeners
 function setupEventListeners() {
     document.getElementById('nextQuoteBtn').addEventListener('click', showRandomQuotes);
     if (shareTwitter) shareTwitter.addEventListener('click', shareOnTwitter);
     if (shareFacebook) shareFacebook.addEventListener('click', shareOnFacebook);
     if (shareWhatsapp) shareWhatsapp.addEventListener('click', shareOnWhatsApp);
-
     if (copyBtn) copyBtn.addEventListener('click', () => copyQuote(activeCard));
     if (fontInc) fontInc.addEventListener('click', () => adjustFontSize(1));
     if (fontDec) fontDec.addEventListener('click', () => adjustFontSize(-1));
 
-    // card selection
     quotesGrid && quotesGrid.addEventListener('click', (e) => {
         const card = e.target.closest('.quote-card');
         if (!card) return;
@@ -44,7 +36,6 @@ function setupEventListeners() {
         setActiveCard(idx);
     });
 
-    // keyboard for active interactions
     document.addEventListener('keydown', (e) => {
         if (e.key === 'c' || e.key === 'C') copyQuote(activeCard);
         if (e.code === 'Space' && e.target.tagName !== 'INPUT' && e.target.tagName !== 'TEXTAREA') {
@@ -54,7 +45,7 @@ function setupEventListeners() {
     });
 }
 
-// Load Quotes (same fetch)
+// Load Quotes from JSON
 async function loadQuotes() {
     try {
         showLoading();
@@ -65,9 +56,8 @@ async function loadQuotes() {
         allQuotes = await response.json();
         if (Array.isArray(allQuotes) && allQuotes.length > 0) {
             initFavorites();
-            showQuoteOfTheDayAndFill(); // populate three cards
+            showQuoteOfTheDayAndFill();
         } else {
-            // show failure on cards
             document.querySelectorAll('[data-card-text]').forEach(el => el.textContent = 'No quotes available.');
             document.querySelectorAll('[data-card-author]').forEach(el => el.textContent = '');
         }
@@ -78,22 +68,25 @@ async function loadQuotes() {
     }
 }
 
-// Show a deterministic quote for card 0 and fill other cards with unique randoms
+// Show Loading State
+function showLoading() {
+    document.querySelectorAll('[data-card-text]').forEach(el => el.textContent = 'Loading wisdom...');
+    document.querySelectorAll('[data-card-author]').forEach(el => el.textContent = '— Please wait');
+}
+
+// Show Quote of the Day + Fill other cards
 function showQuoteOfTheDayAndFill() {
     if (!Array.isArray(allQuotes) || allQuotes.length === 0) return;
 
-    // deterministic index for card 0
     const today = new Date();
-    const seed = today.getFullYear() * 10000 + (today.getMonth()+1) * 100 + today.getDate();
+    const seed = today.getFullYear() * 10000 + (today.getMonth() + 1) * 100 + today.getDate();
     const mainIndex = seed % allQuotes.length;
 
-    // pick two other unique indices
     const indices = new Set([mainIndex]);
     while (indices.size < 3 && indices.size < allQuotes.length) {
         indices.add(Math.floor(Math.random() * allQuotes.length));
     }
     const arr = Array.from(indices);
-    // if less than 3 because quotes < 3, fill with repeats if needed
     while (arr.length < 3) arr.push(arr[arr.length - 1] || 0);
 
     cardIndices = [arr[0], arr[1], arr[2]];
@@ -101,7 +94,7 @@ function showQuoteOfTheDayAndFill() {
     setActiveCard(0);
 }
 
-// Show Random Quotes (all three replace)
+// Show Random Quotes (replace all three)
 function showRandomQuotes() {
     if (!Array.isArray(allQuotes) || allQuotes.length === 0) return;
     const chosen = new Set();
@@ -115,7 +108,7 @@ function showRandomQuotes() {
     setActiveCard(0);
 }
 
-// render card contents
+// Render card contents
 function renderCards() {
     quoteCards().forEach(card => {
         const idx = Number(card.getAttribute('data-card-index'));
@@ -130,16 +123,24 @@ function renderCards() {
             authorEl.textContent = '';
         }
     });
-    updateFavoriteButton();
     updateCardZIndices();
 }
 
-// set active visual state
+// Set active card
 function setActiveCard(idx) {
     activeCard = idx;
     quoteCards().forEach(card => card.classList.toggle('active', Number(card.getAttribute('data-card-index')) === idx));
-    updateFavoriteButton();
     updateCardZIndices();
+}
+
+// Update z-index for stacking
+function updateCardZIndices() {
+    const cards = Array.from(quoteCards());
+    cards.forEach((card, i) => {
+        let z = 10 + i;
+        if (Number(card.getAttribute('data-card-index')) === activeCard) z = 100;
+        card.style.zIndex = z;
+    });
 }
 
 // Copy to clipboard
@@ -161,138 +162,9 @@ async function copyQuote(cardIdx) {
     }
 }
 
-// favorites operate on per-card mapped quote
-function isCardFavorited(cardIdx) {
-    const quoteIndex = cardIndices[cardIdx];
-    if (quoteIndex == null) return false;
-    const q = allQuotes[quoteIndex];
-    const favs = getFavorites();
-    return favs.some(f => f.quote === q.quote && f.author === q.author);
-}
-
-function toggleFavorite(cardIdx) {
-    const quoteIndex = cardIndices[cardIdx];
-    if (quoteIndex == null) return;
-    const q = allQuotes[quoteIndex];
-    const favs = getFavorites();
-    const exists = favs.findIndex(f => f.quote === q.quote && f.author === q.author);
-    if (exists >= 0) favs.splice(exists, 1);
-    else favs.unshift({ quote: q.quote, author: q.author });
-    saveFavorites(favs);
-    updateFavoriteButton();
-}
-
-// Update favorite button UI based on active card
-function updateFavoriteButton() {
-    const favBtn = document.getElementById('favoriteBtn');
-    if (!favBtn) return;
-    if (isCardFavorited(activeCard)) {
-        favBtn.textContent = '❤️';
-        favBtn.title = 'Remove from favorites';
-    } else {
-        favBtn.textContent = '♡';
-        favBtn.title = 'Add to favorites';
-    }
-}
-
-// Favorites modal
-function openFavoritesModal() {
-    const modal = document.getElementById('favoritesModal');
-    const listEl = document.getElementById('favoritesList');
-    if (!modal || !listEl) return;
-    const favs = getFavorites();
-    if (favs.length === 0) {
-        listEl.innerHTML = '<p>No favorites yet.</p>';
-    } else {
-        listEl.innerHTML = favs.map((q, idx) =>
-            `<div class="fav-item" data-idx="${idx}">
-                <p class="fav-quote">"${escapeHtml(q.quote)}"</p>
-                <p class="fav-author">— ${escapeHtml(q.author)}</p>
-                <div class="fav-actions">
-                    <button class="btn small" data-action="copy" data-idx="${idx}">Copy</button>
-                    <button class="btn small" data-action="show" data-idx="${idx}">Show</button>
-                    <button class="btn small" data-action="remove" data-idx="${idx}">Remove</button>
-                </div>
-            </div>`
-        ).join('');
-    }
-    modal.style.display = 'block';
-    modal.setAttribute('aria-hidden', 'false');
-
-    listEl.querySelectorAll('[data-action]').forEach(btn => {
-        btn.addEventListener('click', (ev) => {
-            const action = btn.getAttribute('data-action');
-            const idx = Number(btn.getAttribute('data-idx'));
-            handleFavAction(action, idx);
-        });
-    });
-}
-
-function closeFavoritesModal() {
-    const modal = document.getElementById('favoritesModal');
-    if (!modal) return;
-    modal.style.display = 'none';
-    modal.setAttribute('aria-hidden', 'true');
-}
-
-function handleFavAction(action, idx) {
-    const favs = getFavorites();
-    const item = favs[idx];
-    if (!item) return;
-    if (action === 'copy') {
-        navigator.clipboard.writeText(`"${item.quote}" — ${item.author}`);
-    } else if (action === 'show') {
-        const quoteIdx = allQuotes.findIndex(q => q.quote === item.quote && q.author === item.author);
-        if (quoteIdx >= 0) {
-            cardIndices[activeCard] = quoteIdx;
-            renderCards();
-        }
-        closeFavoritesModal();
-    } else if (action === 'remove') {
-        favs.splice(idx, 1);
-        saveFavorites(favs);
-        openFavoritesModal();
-        updateFavoriteButton();
-    }
-}
-
-function clearAllFavorites() {
-    saveFavorites([]);
-    openFavoritesModal();
-    updateFavoriteButton();
-}
-
-// Favorites handling (localStorage)
-const FAVORITES_KEY = 'wisdom_favorites';
-
-function initFavorites() {
-    if (!localStorage.getItem(FAVORITES_KEY)) {
-        localStorage.setItem(FAVORITES_KEY, JSON.stringify([]));
-    }
-    updateFavoriteButton();
-}
-
-function getFavorites() {
-    try {
-        return JSON.parse(localStorage.getItem(FAVORITES_KEY)) || [];
-    } catch {
-        return [];
-    }
-}
-
-function saveFavorites(list) {
-    localStorage.setItem(FAVORITES_KEY, JSON.stringify(list));
-}
-
-// small helper to escape HTML when rendering
-function escapeHtml(str) {
-    return String(str).replace(/[&<>"'`=\/]/g, s => ({
-        '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;','/':'&#x2F;','`':'&#x60;','=':'&#x3D;'
-    })[s]);
-}
-
-// Font-size adjustments (persists in localStorage)
+// Font-size adjustments
 const FONT_KEY = 'wisdom_font_size';
+
 function adjustFontSize(delta) {
     const current = Number(localStorage.getItem(FONT_KEY)) || 0;
     const newVal = Math.min(3, Math.max(-2, current + delta));
@@ -309,6 +181,27 @@ function applyFontSize() {
 
 applyFontSize();
 
+// Favorites handling
+const FAVORITES_KEY = 'wisdom_favorites';
+
+function initFavorites() {
+    if (!localStorage.getItem(FAVORITES_KEY)) {
+        localStorage.setItem(FAVORITES_KEY, JSON.stringify([]));
+    }
+}
+
+function getFavorites() {
+    try {
+        return JSON.parse(localStorage.getItem(FAVORITES_KEY)) || [];
+    } catch {
+        return [];
+    }
+}
+
+function saveFavorites(list) {
+    localStorage.setItem(FAVORITES_KEY, JSON.stringify(list));
+}
+
 // Share Functions
 function shareOnTwitter() {
     const quoteIndex = cardIndices[activeCard];
@@ -321,4 +214,18 @@ function shareOnTwitter() {
 
 function shareOnFacebook() {
     const quoteIndex = cardIndices[activeCard];
-    if
+    if (quoteIndex == null) return;
+    const q = allQuotes[quoteIndex];
+    const text = `"${q.quote}" — ${q.author}`;
+    const url = `https://www.facebook.com/sharer/sharer.php?quote=${encodeURIComponent(text)}`;
+    window.open(url, '_blank', 'width=550,height=420');
+}
+
+function shareOnWhatsApp() {
+    const quoteIndex = cardIndices[activeCard];
+    if (quoteIndex == null) return;
+    const q = allQuotes[quoteIndex];
+    const text = `"${q.quote}" — ${q.author}`;
+    const url = `https://wa.me/?text=${encodeURIComponent(text)}`;
+    window.open(url, '_blank');
+}
